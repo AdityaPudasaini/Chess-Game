@@ -1,0 +1,60 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build with GCC 15.2.0 (SFML)",
+            "command": "C:\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-std=c++20",
+
+                "${workspaceFolder}\\*.cpp",
+
+                "-IC:/SFML-3.1.0/include",
+                "-LC:/SFML-3.1.0/lib",
+
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system",
+                "-lopengl32",
+
+                "-o",
+                "${fileDirname}\\rooster.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: C:\\mingw64\\bin\\g++.exe"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build with MSVC",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/std:c++latest",
+                "/EHsc",
+                "/Fe:",
+                "${fileDirname}\\rooster.exe",
+                "${workspaceFolder}\\*.cpp"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "compiler: cl.exe"
+        }
+    ]
+}
