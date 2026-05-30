@@ -1,6 +1,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics.hpp>
+#include "board.hpp"
 
 int main()
 {
@@ -14,5 +15,9 @@ int main()
                 window.close();
             }
         }
+
+        window.clear(); 
+        drawBoard(window);
+        window.display();
     }
 }
