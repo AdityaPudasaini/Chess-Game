@@ -2,7 +2,7 @@
 
 void drawBoard(sf::RenderWindow& window) {
 
-    //Colors for the bopoard
+    //Colors for the board
 
     sf::Color white(255, 255, 255);
     sf::Color black (0, 0, 0);
@@ -15,17 +15,16 @@ void drawBoard(sf::RenderWindow& window) {
 
         for (int col = 0; col < 8; col++) {
 
-            if((row + col)%2 == 0) {
+            if ((row + col) % 2 == 0) {
                 boardShape.setFillColor(white);
-                boardShape.setPosition({col * 100.f, row * 100.f});
-                window.draw(boardShape);
             }
 
             else {
                 boardShape.setFillColor(black);
-                boardShape.setPosition({col * 100.f, row * 100.f});
-                window.draw(boardShape);
             }
+
+            boardShape.setPosition({col * 100.f, row * 100.f});
+            window.draw(boardShape);
         }
     }
 
