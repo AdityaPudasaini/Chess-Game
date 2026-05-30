@@ -5,13 +5,13 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({1000, 800}), "My Window", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode({800, 800}), "My Window", sf::Style::Titlebar | sf::Style::Close);
 
     while(window.isOpen()) {
 
         while (const auto event = window.pollEvent()) {
 
-            if (event->is<sf::Event::Closed>()) {
+            if (event->is<sf::Event::Closed>()) { // Closing logic
                 window.close();
             }
         }
