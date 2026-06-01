@@ -1,3 +1,4 @@
+#pragma once
 #include "piece.hpp"
 #include "board.hpp"
 #include <SFML/Graphics.hpp>
@@ -7,8 +8,10 @@ struct Game {
     int selectedRow;
     int selectedColumn;
     bool isSelected;
+
+    Game();
+
+    void userClick(int row, int col, const auto event);
+
+    void draw(sf::RenderWindow& window);
 };
-
-void userClick(int row, int col);
-
-void draw(sf::RenderWindow& window);
