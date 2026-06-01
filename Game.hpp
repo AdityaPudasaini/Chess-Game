@@ -11,7 +11,7 @@ struct Game {
 
     Game();
 
-    void userClick(int row, int col, const auto event);
+    void userClick(int row, int col);
 
     void draw(sf::RenderWindow& window);
 };

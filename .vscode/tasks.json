@@ -13,6 +13,7 @@
                 "${fileDirname}\\main.cpp",
                 "${fileDirname}\\board.cpp",
                 "${fileDirname}\\piece.cpp",
+                "${fileDirname}\\Game.cpp",
 
                 "-IC:/SFML-3.1.0/include",
                 "-LC:/SFML-3.1.0/lib",
