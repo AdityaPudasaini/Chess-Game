@@ -3,9 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include "board.hpp"
 #include "piece.hpp"
+#include "Game.hpp"
+#include <iostream>
 
 int main()
 {
+    Game game;
+
     sf::RenderWindow window(sf::VideoMode({800, 800}), "My Window", sf::Style::Titlebar | sf::Style::Close);
     piece* board[8][8] = {nullptr};
 
@@ -44,10 +48,17 @@ int main()
             if (event->is<sf::Event::Closed>()) { // Closing logic
                 window.close();
             }
+
+            if (event->is<sf::Event::MouseButtonPressed>()) {
+                auto mouse = event->getIf<sf::Event::MouseButtonPressed>();
+                int col = mouse->position.x / 100;
+                int row = mouse->position.y / 100;
+                std::cout << "Clicked row: " << row << " col: " << col << std::endl;
+            }
         }
 
         window.clear(); 
-        drawBoard(window);
+        game.draw(window);
 
         for(int row = 0; row < 8; row++) {
             for(int col = 0; col < 8; col++) {
