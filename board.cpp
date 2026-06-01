@@ -5,7 +5,7 @@ void drawBoard(sf::RenderWindow& window) {
     //Colors for the board
 
     sf::Color white(255, 255, 255);
-    sf::Color black (0, 0, 0);
+    sf::Color black (178, 190, 181);
 
     // Making the rectangle for the board
 
