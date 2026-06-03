@@ -14,4 +14,8 @@ struct Game {
     void userClick(int row, int col);
 
     void draw(sf::RenderWindow& window);
+
+    bool performMoveValidation(int startRow, int startCol, int finalRow, int finalCol);
+
+    void pawnPromotion(int row, int col);
 };

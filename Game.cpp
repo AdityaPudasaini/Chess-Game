@@ -56,11 +56,13 @@ void Game::userClick(int row, int column) {
     }
 
     else {
-        board[row][column] = board[selectedRow][selectedColumn];
-        board[selectedRow][selectedColumn] = nullptr;
-        isSelected = false;
-        selectedColumn = -1;
-        selectedRow = -1;
+        if(performMoveValidation(selectedRow, selectedColumn, row, column)) {
+            board[row][column] = board[selectedRow][selectedColumn];
+            board[selectedRow][selectedColumn] = nullptr;
+            isSelected = false;
+            selectedColumn = -1;
+            selectedRow = -1;
+        }
     }
 }
 
@@ -72,6 +74,50 @@ void Game::draw(sf::RenderWindow& window) {
             if(board[row][col] != nullptr) {
                 board[row][col]->draw(window, row, col);
             }
+        }    }
+}
+
+bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int finalCol) {
+    piece* p = board[startRow][startCol];
+
+    if(p->type == pieceType::pawn) {
+        int direction = (p->color == pieceColor::white) ? -1 : 1;
+        int rowDifference = finalRow - startRow;
+        int colDifference = finalCol - startCol;
+
+        //First rule - Moving 1 place or 2 place
+        if(startCol == finalCol && board[finalRow][finalCol] == nullptr) {
+
+            if((startRow == 1 || startRow == 6) && (rowDifference == 2 || rowDifference == -2)) {
+                finalRow = startRow + 2 * direction;
+                return true;
+            }
+
+            if(rowDifference == 1 || rowDifference == -1) {
+                finalRow = startRow + direction;
+                return true;
+            }
+        }
+
+        // Second rule - Can only capture sideways
+        if(startCol != finalCol && board[finalRow][finalCol] != nullptr) {
+
+            if(rowDifference == 1 || rowDifference == -1) {
+
+                if(colDifference == 1 || colDifference == -1) {
+
+                    finalRow = startRow + direction;
+                    finalCol = startCol + colDifference;
+
+                    return true;
+                }
+            }
         }
     }
+
+    return false;
+}
+
+void Game::pawnPromotion(int row, int col) {
+    
 }
