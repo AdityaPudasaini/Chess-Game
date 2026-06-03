@@ -59,6 +59,7 @@ void Game::userClick(int row, int column) {
         if(performMoveValidation(selectedRow, selectedColumn, row, column)) {
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
+            pawnPromotion(row, column);
             isSelected = false;
             selectedColumn = -1;
             selectedRow = -1;
@@ -88,7 +89,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         //First rule - Moving 1 place or 2 place
         if(startCol == finalCol && board[finalRow][finalCol] == nullptr) {
 
-            if((startRow == 1 || startRow == 6) && (rowDifference == 2 || rowDifference == -2)) {
+            if((startRow == 1 || startRow == 6) && (rowDifference == 2 * direction)) {
                 finalRow = startRow + 2 * direction;
                 return true;
             }
@@ -119,5 +120,22 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 }
 
 void Game::pawnPromotion(int row, int col) {
-    
+    piece* p = board[row][col];
+    pieceColor color = board[row][col]->color;
+
+    if(p->type == pieceType::pawn) {
+        if(color == pieceColor::white) {
+            if(row == 0) {
+                delete board[row][col];
+                board[row][col] = new piece(pieceType::queen, color);
+            }
+        }
+
+        if(color == pieceColor::black) {
+            if(row == 7) {
+                delete board[row][col];
+                board[row][col] = new piece(pieceType::queen, color);
+            }
+        }
+    }
 }
