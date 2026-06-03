@@ -41,7 +41,13 @@ Game::Game() {
 
 void Game::userClick(int row, int column) {
 
-    if(!isSelected) {
+    if(row == selectedRow && column == selectedColumn) {
+        isSelected = false;
+        selectedColumn = -1;
+        selectedRow = -1;
+    }
+
+    else if(!isSelected) {
         if((board[row][column]) != nullptr) {
             selectedRow = row;
             selectedColumn = column;
