@@ -41,6 +41,10 @@ Game::Game() {
 
 void Game::userClick(int row, int column) {
 
+    if(promotion) {
+        return;
+    }
+
     if(row == selectedRow && column == selectedColumn) {
         isSelected = false;
         selectedColumn = -1;
@@ -75,7 +79,32 @@ void Game::draw(sf::RenderWindow& window) {
             if(board[row][col] != nullptr) {
                 board[row][col]->draw(window, row, col);
             }
-        }    }
+        }    
+    }
+
+    if(promotion) {
+        piece* forPromotion[4];
+        forPromotion[0] = new piece(pieceType::queen, color);
+        forPromotion[1] = new piece(pieceType::rook, color);
+        forPromotion[2] = new piece(pieceType::knight, color); 
+        forPromotion[3] = new piece(pieceType::bishop, color);
+
+        int startCol = (promotionCol <= 3) ? 0 : 4;
+
+        sf::RectangleShape promotionRectangle;
+        promotionRectangle.setSize(sf::Vector2f(100, 100));
+        promotionRectangle.setFillColor(sf::Color(148, 148, 148));
+
+        if(promotionCol == 0) {
+            if(color == pieceColor::white) {
+                for(int i = 0; i < 4; i++) {
+                    promotionRectangle.setPosition({(startCol + i) * 100, promotionRow * 100});
+                    window.draw(promotionRectangle);    
+                    forPromotion[i]->draw(window, promotionRow, startCol + i);
+                }
+            }
+        }
+    }
 }
 
 bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int finalCol) {
@@ -121,7 +150,12 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 
 void Game::pawnPromotion(int row, int col) {
     piece* p = board[row][col];
-    pieceColor color = board[row][col]->color;
+    color = board[row][col]->color;
+    promotionRow = row;
+    promotionCol = col;
+
+    promotion = true;
+
 
     if(p->type == pieceType::pawn) {
         if(color == pieceColor::white) {

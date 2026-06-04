@@ -6,9 +6,10 @@
 
 struct Game {
     piece* board[8][8];
-    int selectedRow, selectedColumn, promaotionRow, promaotionCol;
-    bool isSelected, promotion;
-    pieceColor pieceColor;
+    int selectedRow, selectedColumn, promotionRow, promotionCol;
+    bool isSelected;
+    bool promotion = false;
+    pieceColor color;
 
     
     Game();
