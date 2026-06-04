@@ -150,26 +150,58 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 
 void Game::pawnPromotion(int row, int col) {
     piece* p = board[row][col];
-    color = board[row][col]->color;
-    promotionRow = row;
-    promotionCol = col;
-
-    promotion = true;
-
-
+    
     if(p->type == pieceType::pawn) {
-        if(color == pieceColor::white) {
-            if(row == 0) {
-                delete board[row][col];
-                board[row][col] = new piece(pieceType::queen, color);
-            }
+        if(p->color == pieceColor::white && row == 0) {
+            promotionRow = row;
+            promotionCol = col;
+            color = p->color;
+            promotion = true;
         }
 
-        if(color == pieceColor::black) {
-            if(row == 7) {
-                delete board[row][col];
-                board[row][col] = new piece(pieceType::queen, color);
+        if(p->color == pieceColor::black && row == 7) {
+            promotionRow = row;
+            promotionCol = col;
+            color = p->color;
+            promotion = true;
+        }
+    }
+}
+
+void Game::handlePromotionClick(int x, int y) {
+    int clickedRow = y / 100;
+    int clickedCol = x / 100;
+
+    int startCol = (promotionCol <= 3) ? 0 : 4;
+
+    if(clickedRow == promotionRow) {
+        if (clickedCol >= startCol && clickedCol <= startCol + 3) {
+            int choice = clickedCol - startCol;
+
+            switch (choice)
+            {
+                case 0:
+                    delete board[promotionRow][promotionCol];
+                    board[promotionRow][promotionCol] = new piece(pieceType::queen, color);
+                    break;
+                
+                case 1:
+                    delete board[promotionRow][promotionCol];
+                    board[promotionRow][promotionCol] = new piece(pieceType::bishop, color);
+                    break;
+                
+                case 2:
+                    delete board[promotionRow][promotionCol];
+                    board[promotionRow][promotionCol] = new piece(pieceType::knight, color);
+                    break;
+
+                case 3:
+                    delete board[promotionRow][promotionCol];
+                    board[promotionRow][promotionCol] = new piece(pieceType::rook, color);
+                    break;
             }
+
+            promotion = false;
         }
     }
 }

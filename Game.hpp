@@ -21,4 +21,6 @@ struct Game {
     bool performMoveValidation(int startRow, int startCol, int finalRow, int finalCol);
 
     void pawnPromotion(int row, int col);
+
+    void handlePromotionClick(int x, int y);
 };
