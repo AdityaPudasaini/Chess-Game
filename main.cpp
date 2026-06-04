@@ -25,7 +25,14 @@ int main()
                 auto mouse = event->getIf<sf::Event::MouseButtonPressed>();
                 int col = mouse->position.x / 100;
                 int row = mouse->position.y / 100;
-                game.userClick(row, col);
+                
+                if(game.promotion) {
+                    game.handlePromotionClick(row, col);
+                }
+
+                else {
+                    game.userClick(row, col);
+                }
             }
         }
 
