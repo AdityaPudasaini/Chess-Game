@@ -41,8 +41,6 @@ Game::Game() {
 
 void Game::userClick(int row, int column) {
 
-    std::cout << "promotion: " << promotion << " isSelected: " << isSelected << std::endl;
-
     if(promotion) {
         return;
     }
@@ -145,7 +143,96 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
+    if(p->type ==  pieceType::rook) {
+
+        if(startRow == finalRow && startCol == finalCol) {
+            return false;
+        }
+
+        else {
+
+            bool isSthBlocking = pieceBlockingRook(startRow, startCol, finalRow, finalCol);
+
+            if(isSthBlocking) {
+                return false;
+            }
+
+            else {
+                finalRow = startRow;
+                finalCol = startCol;
+                return true;
+            }
+        }
+    }
+
     return false;
+}
+
+bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int finalCol) {
+    int checkValueCol = finalCol - startCol;
+    bool isSthBlocking;
+
+    if(checkValueCol > 0) {
+
+        for(int i = startCol; i < finalCol; i++) {
+
+            if(board[finalRow][i] != nullptr) {
+                isSthBlocking = true;
+            }
+
+            else {
+                isSthBlocking = false;
+            }
+        }
+    }
+
+    else if(checkValueCol < 0) {
+                    
+        for(int i = finalCol; i < startCol; i--) {
+
+            if(board[finalRow][i] != nullptr) {
+                isSthBlocking = true;
+            }
+
+            else {
+                isSthBlocking = false;
+            }
+        }
+    }
+
+    else {
+        int checkValueRow =  finalRow - startRow;
+
+        if(checkValueRow > 0) {
+
+            for(int i = startRow; i < finalRow; i++) {
+
+                if(board[i][finalCol] != nullptr) {
+                    isSthBlocking = true;
+                }
+
+                else {
+                    isSthBlocking = false;
+                }
+            }
+        }
+
+        else if(checkValueRow < 0) {
+
+            for(int i = startRow; i < finalRow; i--) {
+
+                if(board[i][finalCol] != nullptr) {
+                    isSthBlocking = true;
+                }
+
+                else {
+                    isSthBlocking = false;
+                }
+            }
+        }
+    }
+
+    return isSthBlocking;
 }
 
 void Game::pawnPromotion(int row, int col) {
