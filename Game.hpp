@@ -3,6 +3,7 @@
 #include "board.hpp"
 #include <SFML/Graphics.hpp>
 #include <string.h>
+#include <iostream>
 
 struct Game {
     piece* board[8][8];

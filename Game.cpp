@@ -41,6 +41,8 @@ Game::Game() {
 
 void Game::userClick(int row, int column) {
 
+    std::cout << "promotion: " << promotion << " isSelected: " << isSelected << std::endl;
+
     if(promotion) {
         return;
     }
@@ -95,13 +97,11 @@ void Game::draw(sf::RenderWindow& window) {
         promotionRectangle.setSize(sf::Vector2f(100, 100));
         promotionRectangle.setFillColor(sf::Color(148, 148, 148));
 
-        if(promotionCol == 0) {
-            if(color == pieceColor::white) {
-                for(int i = 0; i < 4; i++) {
-                    promotionRectangle.setPosition({(startCol + i) * 100, promotionRow * 100});
-                    window.draw(promotionRectangle);    
-                    forPromotion[i]->draw(window, promotionRow, startCol + i);
-                }
+        if(color == pieceColor::white) {
+            for(int i = 0; i < 4; i++) {
+                promotionRectangle.setPosition({(startCol + i) * 100.f, promotionRow * 100.f});
+                window.draw(promotionRectangle);    
+                forPromotion[i]->draw(window, promotionRow, startCol + i);
             }
         }
     }
@@ -132,7 +132,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         // Second rule - Can only capture sideways
         if(startCol != finalCol && board[finalRow][finalCol] != nullptr) {
 
-            if(rowDifference == 1 || rowDifference == -1) {
+            if(rowDifference == direction) {
 
                 if(colDifference == 1 || colDifference == -1) {
 

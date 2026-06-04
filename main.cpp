@@ -27,7 +27,7 @@ int main()
                 int row = mouse->position.y / 100;
                 
                 if(game.promotion) {
-                    game.handlePromotionClick(row, col);
+                    game.handlePromotionClick(mouse->position.x, mouse->position.y);
                 }
 
                 else {
