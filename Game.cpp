@@ -149,7 +149,15 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
             return false;
         }
 
+        else if(startRow != finalRow && startCol != finalCol) {
+            return false;
+        }
+
         else {
+
+            if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+                return false;
+            }
 
             bool isSthBlocking = pieceBlockingRook(startRow, startCol, finalRow, finalCol);
 
@@ -169,16 +177,18 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 }
 
 bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int finalCol) {
+    piece* p = board[startRow][startCol];
+
     int checkValueCol = finalCol - startCol;
     bool isSthBlocking;
 
     if(checkValueCol > 0) {
 
-        for(int i = startCol; i < finalCol; i++) {
+        for(int i = startCol + 1; i < finalCol; i++) {
 
             if(board[finalRow][i] != nullptr) {
-                isSthBlocking = true;
-            }
+                return true;
+            } 
 
             else {
                 isSthBlocking = false;
@@ -188,7 +198,7 @@ bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int final
 
     else if(checkValueCol < 0) {
                     
-        for(int i = finalCol; i < startCol; i--) {
+        for(int i = startCol - 1; i > finalCol; i--) {  
 
             if(board[finalRow][i] != nullptr) {
                 isSthBlocking = true;
@@ -205,7 +215,7 @@ bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int final
 
         if(checkValueRow > 0) {
 
-            for(int i = startRow; i < finalRow; i++) {
+            for(int i = startRow + 1; i < finalRow; i++) {
 
                 if(board[i][finalCol] != nullptr) {
                     isSthBlocking = true;
@@ -219,7 +229,7 @@ bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int final
 
         else if(checkValueRow < 0) {
 
-            for(int i = startRow; i < finalRow; i--) {
+            for(int i = startRow - 1; i > finalRow; i--) {
 
                 if(board[i][finalCol] != nullptr) {
                     isSthBlocking = true;
