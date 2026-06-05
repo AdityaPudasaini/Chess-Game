@@ -65,6 +65,13 @@ void Game::userClick(int row, int column) {
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
             pawnPromotion(row, column);
+
+            if(isInCheck(currentTurn)) {
+                board[selectedRow][selectedColumn] = board[row][column];
+                board[row][column] = nullptr;
+                return;
+            }
+
             isSelected = false;
             selectedColumn = -1;
             selectedRow = -1;
@@ -303,6 +310,32 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
+    return false;
+}
+
+bool Game::isInCheck(pieceColor color) {
+    
+    int kingRow, kingCol;
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if(board[i][j] != nullptr && board[i][j]->type == pieceType::king && board[i][j]->color == color) {
+                kingRow = i;
+                kingCol = j;
+            }
+        }
+    }
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if(board[i][j] != nullptr && board[i][j]->color != color) {
+                if(performMoveValidation(i, j, kingRow, kingCol)) {
+                    return true;
+                }
+            }
+        }
+    }
+    
     return false;
 }
 

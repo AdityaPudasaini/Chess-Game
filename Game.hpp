@@ -29,4 +29,6 @@ struct Game {
     bool pieceBlockingStraight(int startRow, int startCol, int finalRow, int finalCol);
 
     bool pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int finalCol);
+
+    bool isInCheck(pieceColor color);
 };
