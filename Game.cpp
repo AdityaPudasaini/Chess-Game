@@ -259,6 +259,27 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
+    else if (p->type == pieceType::king)
+    {
+
+        if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+            return false;
+        }
+        
+        int colMove = (abs(startCol - finalCol) == 1)? 1: 0;
+        int rowMove = (abs(startRow - finalRow) == 1)? 1: 0;
+        
+        if((colMove == 1 || colMove == 0) && (rowMove == 1 || rowMove == 0)) {
+            finalRow = startRow;
+            finalCol = startCol;
+            return true;
+        }
+
+        else {
+            return false;
+        }
+    }
+
     return false;
 }
 
