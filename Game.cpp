@@ -145,16 +145,19 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 
     if(p->type ==  pieceType::rook) {
 
+        // Checking if the rook is trying to move to its current position
         if(startRow == finalRow && startCol == finalCol) {
             return false;
         }
 
+        //Checking if the rook is trying to move not straight
         else if(startRow != finalRow && startCol != finalCol) {
             return false;
         }
 
         else {
 
+            //Checking if the piece is the same color as the rook
             if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
                 return false;
             }
@@ -182,6 +185,7 @@ bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int final
     int checkValueCol = finalCol - startCol;
     bool isSthBlocking;
 
+    //Checking where the rook is moving either veritically up and down or horizantally left and right
     if(checkValueCol > 0) {
 
         for(int i = startCol + 1; i < finalCol; i++) {
