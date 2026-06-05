@@ -11,7 +11,7 @@ Game::Game() {
     selectedRow = -1;
     selectedColumn = -1;
     isSelected = false;
-    currentTurn = pieceColor::black;
+    currentTurn = pieceColor::white;
 
     board[0][0] = new piece(pieceType::rook, pieceColor::black);
     board[0][1] = new piece(pieceType::knight, pieceColor::black);
@@ -53,7 +53,7 @@ void Game::userClick(int row, int column) {
     }
 
     else if(!isSelected) {
-        if((board[row][column]) != nullptr && board[row][column]->color != currentTurn) {
+        if((board[row][column]) != nullptr && board[row][column]->color == currentTurn) {
             selectedRow = row;
             selectedColumn = column;
             isSelected = true;
@@ -62,13 +62,15 @@ void Game::userClick(int row, int column) {
 
     else {
         if(performMoveValidation(selectedRow, selectedColumn, row, column)) {
+            piece* captured = board[row][column];  
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
             pawnPromotion(row, column);
 
+
             if(isInCheck(currentTurn)) {
                 board[selectedRow][selectedColumn] = board[row][column];
-                board[row][column] = nullptr;
+                board[row][column] = captured;
                 return;
             }
 
@@ -296,7 +298,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         int colMove = abs(startCol - finalCol);
         int rowMove = abs(startRow - finalRow);
         
-        if((rowMove == 0 || rowMove == 0)) {
+        if((rowMove == 0 || colMove == 0)) {
             return false;
         }
 
