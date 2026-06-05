@@ -74,6 +74,24 @@ void Game::userClick(int row, int column) {
 void Game::draw(sf::RenderWindow& window) {
     drawBoard(window);
 
+    if(isSelected) {
+        sf::RectangleShape selectedTile({100.f, 100.f});
+        selectedTile.setFillColor(sf::Color(255, 255, 0, 100));
+        selectedTile.setPosition({selectedColumn * 100.f, selectedRow * 100.f});
+        window.draw(selectedTile);
+    }
+
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if(performMoveValidation(selectedRow, selectedColumn, row, col)) {
+                sf::RectangleShape validTiles({100.f, 100.f});
+                validTiles.setFillColor(sf::Color(0, 255, 0, 100));
+                validTiles.setPosition({row * 100.f, col * 100.f});
+                window.draw(validTiles);
+            }
+        }
+    }
+
     for(int row = 0; row < 8; row++) {
         for(int col = 0; col < 8; col++) {
             if(board[row][col] != nullptr) {
@@ -259,17 +277,20 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
-    else if (p->type == pieceType::king)
-    {
+    else if (p->type == pieceType::king) {
 
         if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
             return false;
         }
+
+        int colMove = abs(startCol - finalCol);
+        int rowMove = abs(startRow - finalRow);
         
-        int colMove = (abs(startCol - finalCol) == 1)? 1: 0;
-        int rowMove = (abs(startRow - finalRow) == 1)? 1: 0;
-        
-        if((colMove == 1 || colMove == 0) && (rowMove == 1 || rowMove == 0)) {
+        if((rowMove == 0 || rowMove == 0)) {
+            return false;
+        }
+
+        else if((colMove <= 1 && rowMove <= 1)) {
             finalRow = startRow;
             finalCol = startCol;
             return true;
