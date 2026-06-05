@@ -11,7 +11,7 @@ Game::Game() {
     selectedRow = -1;
     selectedColumn = -1;
     isSelected = false;
-    currentTurn = pieceColor::white;
+    currentTurn = pieceColor::black;
 
     board[0][0] = new piece(pieceType::rook, pieceColor::black);
     board[0][1] = new piece(pieceType::knight, pieceColor::black);
@@ -46,10 +46,6 @@ void Game::userClick(int row, int column) {
         return;
     }
 
-    if (board[row][column]->color != currentTurn) {
-        return;
-    }
-
     if(row == selectedRow && column == selectedColumn) {
         isSelected = false;
         selectedColumn = -1;
@@ -57,7 +53,7 @@ void Game::userClick(int row, int column) {
     }
 
     else if(!isSelected) {
-        if((board[row][column]) != nullptr) {
+        if((board[row][column]) != nullptr && board[row][column]->color != currentTurn) {
             selectedRow = row;
             selectedColumn = column;
             isSelected = true;
@@ -302,7 +298,6 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
             finalCol = startCol;
             return true;
         }
-
         else {
             return false;
         }
@@ -312,14 +307,17 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 }
 
 bool Game::pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int finalCol) {
-
-    int rowDir = (finalRow > startRow) ? 1 : -1; // Top and bottom
-    int colDir = (finalCol > startCol) ? 1 : -1; // Left and right
+    int rowDir = (finalRow > startRow) ? 1 : -1;
+    int colDir = (finalCol > startCol) ? 1 : -1;
     
     int r = startRow + rowDir;
     int c = startCol + colDir;
 
-    while(r != finalRow || c != finalCol) {
+    for(int i = 0; i < 7; i++) {
+
+        if(r == finalRow && c == finalCol) {
+            break;
+        }
 
         if(board[r][c] != nullptr) {
             return true;
