@@ -11,6 +11,7 @@ Game::Game() {
     selectedRow = -1;
     selectedColumn = -1;
     isSelected = false;
+    currentTurn = pieceColor::white;
 
     board[0][0] = new piece(pieceType::rook, pieceColor::black);
     board[0][1] = new piece(pieceType::knight, pieceColor::black);
@@ -45,6 +46,10 @@ void Game::userClick(int row, int column) {
         return;
     }
 
+    if (board[row][column]->color != currentTurn) {
+        return;
+    }
+
     if(row == selectedRow && column == selectedColumn) {
         isSelected = false;
         selectedColumn = -1;
@@ -67,6 +72,8 @@ void Game::userClick(int row, int column) {
             isSelected = false;
             selectedColumn = -1;
             selectedRow = -1;
+
+            currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
         }
     }
 }
@@ -79,15 +86,15 @@ void Game::draw(sf::RenderWindow& window) {
         selectedTile.setFillColor(sf::Color(255, 255, 0, 100));
         selectedTile.setPosition({selectedColumn * 100.f, selectedRow * 100.f});
         window.draw(selectedTile);
-    }
 
-    for (int row = 0; row < 8; row++) {
-        for (int col = 0; col < 8; col++) {
-            if(performMoveValidation(selectedRow, selectedColumn, row, col)) {
-                sf::RectangleShape validTiles({100.f, 100.f});
-                validTiles.setFillColor(sf::Color(0, 255, 0, 100));
-                validTiles.setPosition({row * 100.f, col * 100.f});
-                window.draw(validTiles);
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if(performMoveValidation(selectedRow, selectedColumn, row, col)) {
+                    sf::RectangleShape validTiles({100.f, 100.f});
+                    validTiles.setFillColor(sf::Color(0, 255, 0, 100));
+                    validTiles.setPosition({col * 100.f, row * 100.f});
+                    window.draw(validTiles);
+                }
             }
         }
     }
@@ -139,7 +146,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                 return true;
             }
 
-            if(rowDifference == 1 || rowDifference == -1) {
+            if(rowDifference == direction) {
                 finalRow = startRow + direction;
                 return true;
             }
@@ -312,7 +319,7 @@ bool Game::pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int f
     int r = startRow + rowDir;
     int c = startCol + colDir;
 
-    while(r != finalRow && c != finalCol) {
+    while(r != finalRow || c != finalCol) {
 
         if(board[r][c] != nullptr) {
             return true;
@@ -337,42 +344,29 @@ bool Game::pieceBlockingStraight(int startRow, int startCol, int finalRow, int f
         for(int i = startCol + 1; i < finalCol; i++) {
 
             if(board[finalRow][i] != nullptr) {
-                return true;
-            } 
-
-            else {
-                isSthBlocking = false;
+                return true; 
             }
         }
     }
-
     else if(checkValueCol < 0) {
-                    
-        for(int i = startCol - 1; i > finalCol; i--) {  
+
+        for(int i = startCol - 1; i > finalCol; i--) {
 
             if(board[finalRow][i] != nullptr) {
-                isSthBlocking = true;
-            }
-
-            else {
-                isSthBlocking = false;
+                return true;
             }
         }
     }
 
     else {
-        int checkValueRow =  finalRow - startRow;
+        int checkValueRow = finalRow - startRow;
 
         if(checkValueRow > 0) {
 
             for(int i = startRow + 1; i < finalRow; i++) {
 
                 if(board[i][finalCol] != nullptr) {
-                    isSthBlocking = true;
-                }
-
-                else {
-                    isSthBlocking = false;
+                    return true;
                 }
             }
         }
@@ -382,17 +376,13 @@ bool Game::pieceBlockingStraight(int startRow, int startCol, int finalRow, int f
             for(int i = startRow - 1; i > finalRow; i--) {
 
                 if(board[i][finalCol] != nullptr) {
-                    isSthBlocking = true;
-                }
-
-                else {
-                    isSthBlocking = false;
+                    return true;
                 }
             }
         }
     }
 
-    return isSthBlocking;
+    return false;
 }
 
 void Game::pawnPromotion(int row, int col) {

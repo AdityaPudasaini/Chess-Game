@@ -11,7 +11,7 @@ struct Game {
     int selectedRow, selectedColumn, promotionRow, promotionCol;
     bool isSelected;
     bool promotion = false;
-    pieceColor color;
+    pieceColor color, currentTurn;
 
     
     Game();
