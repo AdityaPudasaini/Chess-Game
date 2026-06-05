@@ -176,6 +176,26 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
+    else if(p->type == pieceType::knight) {
+
+        if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+            return false;
+        }
+
+        int rowDiff = abs(finalRow - startRow);
+        int colDiff = abs(finalCol - startCol);
+
+        if((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) {
+            finalRow = startRow;
+            finalCol = startCol;
+            return true;
+        }
+
+        else {
+            return false;
+        }
+    }
+
     else if(p->type == pieceType::bishop) {
 
         if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
