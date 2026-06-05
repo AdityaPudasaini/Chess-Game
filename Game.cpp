@@ -143,7 +143,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
     }
 
-    if(p->type ==  pieceType::rook) {
+    else if(p->type ==  pieceType::rook) {
 
         // Checking if the rook is trying to move to its current position
         if(startRow == finalRow && startCol == finalCol) {
@@ -174,6 +174,45 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                 return true;
             }
         }
+    }
+
+    else if(p->type == pieceType::bishop) {
+
+        if((finalRow - startRow) == (finalCol - startCol)) {
+            if(pieceBlockingBishop(startRow, startCol, finalRow, finalCol)) {
+                return false;
+            }
+
+            else {
+                finalRow = startRow;
+                finalCol = startCol;
+                return true;
+            }
+        }
+
+        else {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool Game::pieceBlockingBishop(int startRow, int startCol, int finalRow, int finalCol) {
+
+    int rowDir = (finalRow > startRow) ? 1 : -1; // Top and bottom
+    int colDir = (finalCol > startCol) ? 1 : -1; // Left and right
+    
+    int r = startRow + rowDir;
+    int c = startCol + colDir;
+
+    while(r != finalRow && c != finalCol) {
+
+        if(board[r][c] != nullptr) {
+            return true;
+        }
+
+        r += rowDir;
+        c += colDir;
     }
 
     return false;
