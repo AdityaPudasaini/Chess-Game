@@ -11,8 +11,8 @@ struct Game {
     int selectedRow, selectedColumn, promotionRow, promotionCol;
     bool isSelected;
     bool promotion = false;
-    pieceColor color, currentTurn;
-
+    pieceColor color, currentTurn, winner;
+    bool gameOver = false;
     
     Game();
 
@@ -31,4 +31,6 @@ struct Game {
     bool pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int finalCol);
 
     bool isInCheck(pieceColor color);
+
+    bool isCheckmate(pieceColor color);
 };

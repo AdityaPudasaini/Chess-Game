@@ -42,7 +42,7 @@ Game::Game() {
 
 void Game::userClick(int row, int column) {
 
-    if(promotion) {
+    if(promotion || gameOver) {
         return;
     }
 
@@ -79,6 +79,11 @@ void Game::userClick(int row, int column) {
             selectedRow = -1;
 
             currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+
+            if(isCheckmate(currentTurn)) {
+                gameOver = true;
+                winner = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+            }
         }
     }
 }
@@ -132,6 +137,31 @@ void Game::draw(sf::RenderWindow& window) {
                 forPromotion[i]->draw(window, promotionRow, startCol + i);
             }
         }
+    }
+
+    if(gameOver) {
+        sf::RectangleShape winnerScreen({800.f, 800.f});
+        winnerScreen.setFillColor(sf::Color(0, 0, 0, 160));
+        window.draw(winnerScreen);
+
+        sf::Font font;
+        if(!font.openFromFile("./assets/font.ttf")) {
+            return; 
+        }
+
+        std::string whoWon = (winner == pieceColor::white) ? "White Wins!" : "Black Wins!";
+
+        sf::Text text(font);
+        text.setString(whoWon);
+        text.setCharacterSize(60);
+        text.setFillColor(sf::Color::White);
+        text.setStyle(sf::Text::Bold);
+
+        sf::FloatRect bounds = text.getLocalBounds();
+        text.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
+        text.setPosition({400.f, 400.f});
+
+        window.draw(text);
     }
 }
 
@@ -313,6 +343,48 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
     }
 
     return false;
+}
+
+bool Game::isCheckmate(pieceColor color) {
+
+    if(!isInCheck(color)) return false;
+
+    for(int startRow = 0; startRow < 8; startRow++) {
+
+        for(int startCol = 0; startCol < 8; startCol++) {
+
+            if(board[startRow][startCol] == nullptr) {
+                continue;
+            }
+
+            if(board[startRow][startCol]->color != color) {
+                continue;
+            }
+
+            for(int finalRow = 0; finalRow < 8; finalRow++) {
+
+                for(int finalCol = 0; finalCol < 8; finalCol++) {
+
+                    if(!performMoveValidation(startRow, startCol, finalRow, finalCol)) {
+                        continue;
+                    }
+
+                    piece* captured = board[finalRow][finalCol];
+                    board[finalRow][finalCol] = board[startRow][startCol];
+                    board[startRow][startCol] = nullptr;
+
+                    bool stillInCheck = isInCheck(color);
+
+                    board[startRow][startCol] = board[finalRow][finalCol];
+                    board[finalRow][finalCol] = captured;
+
+                    if(!stillInCheck) return false; 
+                }
+            }
+        }
+    }
+
+    return true; 
 }
 
 bool Game::isInCheck(pieceColor color) {
