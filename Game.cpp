@@ -178,7 +178,11 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
 
     else if(p->type == pieceType::bishop) {
 
-        if((finalRow - startRow) == (finalCol - startCol)) {
+        if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+            return false;
+        }
+
+        if(abs(finalRow - startRow) == abs(finalCol - startCol)) {
             if(pieceBlockingBishop(startRow, startCol, finalRow, finalCol)) {
                 return false;
             }

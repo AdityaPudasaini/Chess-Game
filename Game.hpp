@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <string.h>
 #include <iostream>
+#include <cmath>
 
 struct Game {
     piece* board[8][8];
