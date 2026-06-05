@@ -162,7 +162,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                 return false;
             }
 
-            bool isSthBlocking = pieceBlockingRook(startRow, startCol, finalRow, finalCol);
+            bool isSthBlocking = pieceBlockingStraight(startRow, startCol, finalRow, finalCol);
 
             if(isSthBlocking) {
                 return false;
@@ -183,7 +183,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         }
 
         if(abs(finalRow - startRow) == abs(finalCol - startCol)) {
-            if(pieceBlockingBishop(startRow, startCol, finalRow, finalCol)) {
+            if(pieceBlockingDiagonal(startRow, startCol, finalRow, finalCol)) {
                 return false;
             }
 
@@ -198,10 +198,51 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
             return false;
         }
     }
+
+    else if(p->type == pieceType::queen) {
+
+        if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+            return false;
+        }
+
+        bool isStraight = (startCol == finalCol || startRow == finalRow)? true : false;
+        bool isDiagonal = (abs(finalRow - startRow) == abs(finalCol -  startCol))? true : false;
+
+        if(isStraight) {
+
+            if(pieceBlockingStraight(startRow, startCol, finalRow, finalCol)) {
+                return false;
+            }
+
+            else {
+                finalRow = startRow;
+                finalCol = startCol;
+                return true;
+            }
+        }
+
+        else if(isDiagonal) {
+
+            if(pieceBlockingDiagonal(startRow, startCol, finalRow, finalCol)) {
+                return false;
+            }
+
+            else {
+                finalRow = startRow;
+                finalCol = startCol;
+                return true;
+            }
+        }
+
+        else {
+            return false;
+        }
+    }
+
     return false;
 }
 
-bool Game::pieceBlockingBishop(int startRow, int startCol, int finalRow, int finalCol) {
+bool Game::pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int finalCol) {
 
     int rowDir = (finalRow > startRow) ? 1 : -1; // Top and bottom
     int colDir = (finalCol > startCol) ? 1 : -1; // Left and right
@@ -222,7 +263,7 @@ bool Game::pieceBlockingBishop(int startRow, int startCol, int finalRow, int fin
     return false;
 }
 
-bool Game::pieceBlockingRook(int startRow, int startCol, int finalRow, int finalCol) {
+bool Game::pieceBlockingStraight(int startRow, int startCol, int finalRow, int finalCol) {
     piece* p = board[startRow][startCol];
 
     int checkValueCol = finalCol - startCol;

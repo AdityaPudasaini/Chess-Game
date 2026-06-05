@@ -26,7 +26,7 @@ struct Game {
 
     void handlePromotionClick(int x, int y);
 
-    bool pieceBlockingRook(int startRow, int startCol, int finalRow, int finalCol);
+    bool pieceBlockingStraight(int startRow, int startCol, int finalRow, int finalCol);
 
-    bool pieceBlockingBishop(int startRow, int startCol, int finalRow, int finalCol);
+    bool pieceBlockingDiagonal(int startRow, int startCol, int finalRow, int finalCol);
 };
