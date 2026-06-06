@@ -20,6 +20,8 @@ struct Game {
     
     Game();
 
+    ~Game();
+
     void userClick(int row, int col);
 
     void draw(sf::RenderWindow& window);

@@ -876,3 +876,19 @@ void Game::handlePromotionClick(int x, int y) {
         }
     }
 }
+
+Game::~Game() {
+
+    for(int row = 0; row < 8; row++) {
+        
+        for(int col = 0; col < 8; col++) {
+            delete board[row][col];
+            board[row][col] = nullptr;
+        }
+    }
+
+    for(int i = 0; i < 4; i++) {
+        delete promotionPieces[i];
+        promotionPieces[i] = nullptr;
+    }
+}
