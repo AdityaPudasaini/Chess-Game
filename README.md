@@ -37,6 +37,7 @@ A graphical chess game built in C++ using the SFML library. This project impleme
 - 🏰 Castling (kingside and queenside)
 - 👻 En passant
 - 🤝 Stalemate detection
+- 🔁 Draw by threefold repetition
 
 ---
 
@@ -109,7 +110,7 @@ g++ -std=c++20 main.cpp board.cpp piece.cpp Game.cpp \
 
 - No AI — two human players only
 - No game timer
-- No draw by repetition or 50-move rule
+- No draw by 50-move rule
 
 ---
 
