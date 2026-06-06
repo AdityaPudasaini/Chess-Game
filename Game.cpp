@@ -500,10 +500,6 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                     return false;
                 }
 
-                if(board[startRow][startCol - 3] != nullptr) {
-                    return false;
-                }
-
                 board[startRow][startCol - 1] = board[startRow][startCol];
                 board[startRow][startCol] = nullptr;
 
