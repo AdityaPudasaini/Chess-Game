@@ -78,6 +78,30 @@ void Game::userClick(int row, int column) {
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
 
+            if(captured != nullptr && captured->type == pieceType::rook) {
+
+                if(captured->color == pieceColor::white) {
+
+                    if(column == 0) {
+                        whiteRookLeftMoved = true;
+                    }
+
+                    if(column == 7) {
+                        whiteRookRightMoved = true;
+                    }
+                } 
+                
+                else {
+                    if(column == 0) {
+                        blackRookLeftMoved = true;
+                    }
+
+                    if(column == 7) {
+                        blackRookRightMoved = true;
+                    }
+                }
+            }
+
             if(board[row][column]->type == pieceType::king && abs(column - selectedColumn) == 2) {
 
                 if(column > selectedColumn) {
@@ -880,7 +904,7 @@ void Game::handlePromotionClick(int x, int y) {
 Game::~Game() {
 
     for(int row = 0; row < 8; row++) {
-        
+
         for(int col = 0; col < 8; col++) {
             delete board[row][col];
             board[row][col] = nullptr;
