@@ -160,6 +160,14 @@ void Game::userClick(int row, int column) {
 
             if(!promotion) {
                 currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+
+                std::string hash = getBoardHash();
+                positionHistory[hash]++;
+
+                if(positionHistory[hash] >= 3) {
+                    gameOver = true;
+                    isDraw = true;
+                }
             }
 
             if(isCheckmate(currentTurn)) {
@@ -231,7 +239,7 @@ void Game::draw(sf::RenderWindow& window) {
         std::string whoWon;
 
         if(isDraw) {
-            whoWon = "message";
+            whoWon = "Draw";
         }
 
         else {
@@ -526,6 +534,54 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
     }
 }
 
+std::string Game::getBoardHash() {
+    std::string hash = "";
+
+    for(int row = 0; row < 8; row++) {
+
+        for(int col = 0; col < 8; col++) {
+
+            if(board[row][col] == nullptr) {
+                hash += "--";
+            } 
+            
+            else {
+                hash += (board[row][col]->color == pieceColor::white) ? "w" : "b";
+
+                switch(board[row][col]->type) {
+                    case pieceType::king:   
+                        hash += "K"; 
+                        break;
+                    
+                    case pieceType::queen:  
+                        hash += "Q"; 
+                        break;
+                    
+                    case pieceType::rook:   
+                        hash += "R"; 
+                        break;
+
+                    case pieceType::bishop: 
+                        hash += "B"; 
+                        break;
+
+                    case pieceType::knight: 
+                        hash += "N"; 
+                        break;
+
+                    case pieceType::pawn:   
+                        hash += "P"; 
+                        break;
+                }
+            }
+        }
+    }
+
+    hash += (currentTurn == pieceColor::white) ? "w" : "b";
+
+    return hash;
+}
+
 bool Game::isStalemate(pieceColor color) {
     if(isInCheck(color)) {
         return false;
@@ -809,6 +865,14 @@ void Game::handlePromotionClick(int x, int y) {
             selectedRow = -1;
 
             currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+
+            std::string hash = getBoardHash();
+            positionHistory[hash]++;
+
+            if(positionHistory[hash] >= 3) {
+                gameOver = true;
+                isDraw = true;
+            }
         }
     }
 }

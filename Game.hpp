@@ -5,6 +5,7 @@
 #include <string.h>
 #include <iostream>
 #include <cmath>
+#include <map>
 
 struct Game {
     piece* board[8][8];
@@ -14,6 +15,8 @@ struct Game {
     pieceColor color, currentTurn, winner, enPassantColor;
     bool gameOver = false, isDraw = false, whiteKingMoved, blackKingMoved, whiteRookLeftMoved, whiteRookRightMoved, blackRookLeftMoved, blackRookRightMoved;
     piece* promotionPieces[4] = {nullptr, nullptr, nullptr, nullptr};
+
+    std::map<std::string, int> positionHistory;
     
     Game();
 
@@ -38,4 +41,6 @@ struct Game {
     bool isLegalMove(int startRow, int startCol, int finalRow, int finalCol);
 
     bool isStalemate(pieceColor color);
+
+    std::string getBoardHash();
 };
