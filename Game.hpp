@@ -8,10 +8,10 @@
 
 struct Game {
     piece* board[8][8];
-    int selectedRow, selectedColumn, promotionRow, promotionCol;
+    int selectedRow, selectedColumn, promotionRow, promotionCol, enPassantCol, enPassantRow;
     bool isSelected;
     bool promotion = false;
-    pieceColor color, currentTurn, winner;
+    pieceColor color, currentTurn, winner, enPassantColor;
     bool gameOver = false;
     piece* promotionPieces[4] = {nullptr, nullptr, nullptr, nullptr};
     

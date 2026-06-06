@@ -11,6 +11,8 @@ Game::Game() {
     selectedRow = -1;
     selectedColumn = -1;
     isSelected = false;
+    enPassantCol = -1;
+    enPassantRow = -1;
     currentTurn = pieceColor::white;
 
     board[0][0] = new piece(pieceType::rook, pieceColor::black);
@@ -62,11 +64,32 @@ void Game::userClick(int row, int column) {
 
     else {
         if(performMoveValidation(selectedRow, selectedColumn, row, column)) {
-            piece* captured = board[row][column];  
+            piece* captured = board[row][column];
+            int moveStartRow = selectedRow;
+
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
-            pawnPromotion(row, column);
 
+            int direction = (board[row][column]->color == pieceColor::white) ? -1 : 1;
+
+
+            if(board[row][column]->type == pieceType::pawn && row == enPassantRow + direction && column == enPassantCol && captured == nullptr) {
+                delete board[enPassantRow][enPassantCol];
+                board[enPassantRow][enPassantCol] = nullptr;
+            }
+
+            if(board[row][column]->type == pieceType::pawn && abs(row - moveStartRow) == 2) {
+                enPassantRow = row;
+                enPassantCol = column;
+                enPassantColor = board[row][column]->color;     
+            } 
+            
+            else {
+                enPassantRow = -1;
+                enPassantCol = -1;
+            }
+
+            pawnPromotion(row, column);
 
             if(isInCheck(currentTurn)) {
                 board[selectedRow][selectedColumn] = board[row][column];
@@ -75,7 +98,7 @@ void Game::userClick(int row, int column) {
                 selectedRow = -1;
                 selectedColumn = -1;
                 return;
-            }
+            }            
 
             isSelected = false;
             selectedColumn = -1;
@@ -198,6 +221,19 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                     finalRow = startRow + direction;
                     finalCol = startCol + colDifference;
 
+
+
+                    return true;
+                }
+            }
+        }
+
+        //Third Rule - EnPassant
+        if(enPassantCol != -1 && enPassantRow != -1) {
+
+            if(rowDifference == direction && (colDifference == 1 || colDifference == -1)) {
+
+                if(finalRow == enPassantRow + direction && finalCol == enPassantCol && board[finalRow][finalCol] == nullptr && enPassantColor != p->color) {
                     return true;
                 }
             }
