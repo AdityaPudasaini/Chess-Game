@@ -6,8 +6,6 @@ A graphical chess game built in C++ using the SFML library. This project impleme
 
 ## 📷 Screenshots
 
-> **Add your screenshots here!** Take a screenshot of your game running and upload them to a `screenshots/` folder in your repo, then replace the placeholder links below.
-
 ### Game Board
 <img width="799" height="792" alt="image" src="https://github.com/user-attachments/assets/fc94f750-b8fe-461e-89ef-d0c3e79ac7da" />
 
