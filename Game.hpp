@@ -13,6 +13,7 @@ struct Game {
     bool promotion = false;
     pieceColor color, currentTurn, winner;
     bool gameOver = false;
+    piece* promotionPieces[4] = {nullptr, nullptr, nullptr, nullptr};
     
     Game();
 
@@ -33,4 +34,6 @@ struct Game {
     bool isInCheck(pieceColor color);
 
     bool isCheckmate(pieceColor color);
+
+    bool isLegalMove(int startRow, int startCol, int finalRow, int finalCol);
 };

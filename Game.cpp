@@ -71,6 +71,9 @@ void Game::userClick(int row, int column) {
             if(isInCheck(currentTurn)) {
                 board[selectedRow][selectedColumn] = board[row][column];
                 board[row][column] = captured;
+                isSelected = false;
+                selectedRow = -1;
+                selectedColumn = -1;
                 return;
             }
 
@@ -78,7 +81,9 @@ void Game::userClick(int row, int column) {
             selectedColumn = -1;
             selectedRow = -1;
 
-            currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+            if(!promotion) {
+                currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+            }
 
             if(isCheckmate(currentTurn)) {
                 gameOver = true;
@@ -99,7 +104,7 @@ void Game::draw(sf::RenderWindow& window) {
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                if(performMoveValidation(selectedRow, selectedColumn, row, col)) {
+                if(isLegalMove(selectedRow, selectedColumn, row, col)) {
                     sf::RectangleShape validTiles({100.f, 100.f});
                     validTiles.setFillColor(sf::Color(0, 255, 0, 100));
                     validTiles.setPosition({col * 100.f, row * 100.f});
@@ -118,24 +123,16 @@ void Game::draw(sf::RenderWindow& window) {
     }
 
     if(promotion) {
-        piece* forPromotion[4];
-        forPromotion[0] = new piece(pieceType::queen, color);
-        forPromotion[1] = new piece(pieceType::rook, color);
-        forPromotion[2] = new piece(pieceType::knight, color); 
-        forPromotion[3] = new piece(pieceType::bishop, color);
-
         int startCol = (promotionCol <= 3) ? 0 : 4;
 
         sf::RectangleShape promotionRectangle;
         promotionRectangle.setSize(sf::Vector2f(100, 100));
         promotionRectangle.setFillColor(sf::Color(148, 148, 148));
 
-        if(color == pieceColor::white) {
-            for(int i = 0; i < 4; i++) {
-                promotionRectangle.setPosition({(startCol + i) * 100.f, promotionRow * 100.f});
-                window.draw(promotionRectangle);    
-                forPromotion[i]->draw(window, promotionRow, startCol + i);
-            }
+        for(int i = 0; i < 4; i++) {
+            promotionRectangle.setPosition({(startCol + i) * 100.f, promotionRow * 100.f});
+            window.draw(promotionRectangle);    
+            promotionPieces[i]->draw(window, promotionRow, startCol + i);
         }
     }
 
@@ -172,6 +169,10 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         int direction = (p->color == pieceColor::white) ? -1 : 1;
         int rowDifference = finalRow - startRow;
         int colDifference = finalCol - startCol;
+
+        if(board[finalRow][finalCol] != nullptr && board[finalRow][finalCol]->color == p->color) {
+            return false;
+        }
 
         //First rule - Moving 1 place or 2 place
         if(startCol == finalCol && board[finalRow][finalCol] == nullptr) {
@@ -328,7 +329,7 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
         int colMove = abs(startCol - finalCol);
         int rowMove = abs(startRow - finalRow);
         
-        if((rowMove == 0 || colMove == 0)) {
+        if((rowMove == 0 && colMove == 0)) {
             return false;
         }
 
@@ -343,6 +344,24 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
     }
 
     return false;
+}
+
+bool Game::isLegalMove(int startRow, int startCol, int finalRow, int finalCol) {
+
+    if(!performMoveValidation(startRow, startCol, finalRow, finalCol)) {
+        return false;
+    }
+
+    piece* captured = board[finalRow][finalCol];
+    board[finalRow][finalCol] = board[startRow][startCol];
+    board[startRow][startCol] = nullptr;
+
+    bool inCheck = isInCheck(board[finalRow][finalCol]->color);
+
+    board[startRow][startCol] = board[finalRow][finalCol];
+    board[finalRow][finalCol] = captured;
+
+    return !inCheck;
 }
 
 bool Game::isCheckmate(pieceColor color) {
@@ -494,18 +513,16 @@ void Game::pawnPromotion(int row, int col) {
     piece* p = board[row][col];
     
     if(p->type == pieceType::pawn) {
-        if(p->color == pieceColor::white && row == 0) {
+        if((p->color == pieceColor::white && row == 0) || (p->color == pieceColor::black && row == 7)) {
             promotionRow = row;
             promotionCol = col;
             color = p->color;
             promotion = true;
-        }
 
-        if(p->color == pieceColor::black && row == 7) {
-            promotionRow = row;
-            promotionCol = col;
-            color = p->color;
-            promotion = true;
+            promotionPieces[0] = new piece(pieceType::queen, color);
+            promotionPieces[1] = new piece(pieceType::rook, color);
+            promotionPieces[2] = new piece(pieceType::knight, color);
+            promotionPieces[3] = new piece(pieceType::bishop, color);
         }
     }
 }
@@ -515,9 +532,17 @@ void Game::handlePromotionClick(int x, int y) {
     int clickedCol = x / 100;
 
     int startCol = (promotionCol <= 3) ? 0 : 4;
+    pieceType chosenType;
 
     if(clickedRow == promotionRow) {
         if (clickedCol >= startCol && clickedCol <= startCol + 3) {
+
+            for(int i = 0; i < 4; i++) {
+                if(promotionPieces[i] == nullptr) {
+                    return;
+                }
+            }
+
             int choice = clickedCol - startCol;
 
             switch (choice)
@@ -529,7 +554,7 @@ void Game::handlePromotionClick(int x, int y) {
                 
                 case 1:
                     delete board[promotionRow][promotionCol];
-                    board[promotionRow][promotionCol] = new piece(pieceType::bishop, color);
+                    board[promotionRow][promotionCol] = new piece(pieceType::rook, color);
                     break;
                 
                 case 2:
@@ -539,11 +564,25 @@ void Game::handlePromotionClick(int x, int y) {
 
                 case 3:
                     delete board[promotionRow][promotionCol];
-                    board[promotionRow][promotionCol] = new piece(pieceType::rook, color);
+                    board[promotionRow][promotionCol] = new piece(pieceType::bishop, color);
                     break;
+                
+                default:
+                    return;
+            }
+
+            for(int i = 0; i < 4; i++) {
+                delete promotionPieces[i];
+                promotionPieces[i] = nullptr;
             }
 
             promotion = false;
+
+            isSelected = false;
+            selectedColumn = -1;
+            selectedRow = -1;
+
+            currentTurn = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
         }
     }
 }
