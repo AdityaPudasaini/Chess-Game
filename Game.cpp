@@ -14,6 +14,12 @@ Game::Game() {
     enPassantCol = -1;
     enPassantRow = -1;
     currentTurn = pieceColor::white;
+    whiteKingMoved = false;;
+    blackKingMoved = false;;
+    whiteRookLeftMoved = false;;
+    whiteRookRightMoved = false;;
+    blackRookLeftMoved = false;;
+    blackRookRightMoved = false;
 
     board[0][0] = new piece(pieceType::rook, pieceColor::black);
     board[0][1] = new piece(pieceType::knight, pieceColor::black);
@@ -65,13 +71,61 @@ void Game::userClick(int row, int column) {
     else {
         if(performMoveValidation(selectedRow, selectedColumn, row, column)) {
             piece* captured = board[row][column];
+            piece* movedPiece = board[selectedRow][selectedColumn];
+
             int moveStartRow = selectedRow;
 
             board[row][column] = board[selectedRow][selectedColumn];
             board[selectedRow][selectedColumn] = nullptr;
 
+            if(board[row][column]->type == pieceType::king && abs(column - selectedColumn) == 2) {
+
+                if(column > selectedColumn) {
+                    board[row][column - 1] = board[row][7];
+                    board[row][7] = nullptr;
+                } 
+                
+                else {
+                    board[row][column + 1] = board[row][0];
+                    board[row][0] = nullptr;
+                }
+            }
+
             int direction = (board[row][column]->color == pieceColor::white) ? -1 : 1;
 
+            if(movedPiece->type == pieceType::king) {
+                if(movedPiece->color == pieceColor::white) {
+                    whiteKingMoved = true;
+                }
+
+                else {
+                    blackKingMoved = true;
+                }
+            }
+
+            if(movedPiece->type == pieceType::rook) {
+
+                if(movedPiece->color == pieceColor::white) {
+
+                    if(selectedColumn  == 0) {
+                        whiteRookLeftMoved = true;
+                    }
+
+                    if(selectedColumn  == 7) {
+                        whiteRookRightMoved = true;
+                    }
+                } 
+                
+                else {
+                    if(selectedColumn  == 0) {
+                        blackRookLeftMoved = true;
+                    }
+
+                    if(selectedColumn  == 7) {
+                        blackRookRightMoved = true;
+                    }
+                }
+            }
 
             if(board[row][column]->type == pieceType::pawn && row == enPassantRow + direction && column == enPassantCol && captured == nullptr) {
                 delete board[enPassantRow][enPassantCol];
@@ -111,6 +165,11 @@ void Game::userClick(int row, int column) {
             if(isCheckmate(currentTurn)) {
                 gameOver = true;
                 winner = (currentTurn == pieceColor::white) ? pieceColor::black : pieceColor::white;
+            }
+
+            if(isStalemate(currentTurn)) {
+                gameOver = true;
+                isDraw = true;
             }
         }
     }
@@ -169,7 +228,15 @@ void Game::draw(sf::RenderWindow& window) {
             return; 
         }
 
-        std::string whoWon = (winner == pieceColor::white) ? "White Wins!" : "Black Wins!";
+        std::string whoWon;
+
+        if(isDraw) {
+            whoWon = "message";
+        }
+
+        else {
+            whoWon = (winner == pieceColor::white) ? "White Wins!" : "Black Wins!";
+        }
 
         sf::Text text(font);
         text.setString(whoWon);
@@ -238,6 +305,8 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                 }
             }
         }
+
+        return false;
     }
 
     else if(p->type ==  pieceType::rook) {
@@ -271,6 +340,8 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
                 return true;
             }
         }
+
+        return false;
     }
 
     else if(p->type == pieceType::knight) {
@@ -374,12 +445,133 @@ bool Game::performMoveValidation(int startRow, int startCol, int finalRow, int f
             finalCol = startCol;
             return true;
         }
+
+        else if(rowMove == 0 && colMove == 2) {
+            bool kingMoved = (p->color == pieceColor::white) ? whiteKingMoved : blackKingMoved;
+
+            if(kingMoved) {
+                return false;
+            }
+
+            if(isInCheck(p->color)) return false;
+
+            if(finalCol > startCol) {
+                bool rookMoved = (p->color == pieceColor::white) ? whiteRookRightMoved : blackRookRightMoved;
+
+                if(rookMoved) {
+                    return false;
+                }
+
+                if(board[startRow][startCol + 1] != nullptr) {
+                    return false;
+                }
+
+                if(board[startRow][startCol + 2] != nullptr) {
+                    return false;
+                }
+
+                board[startRow][startCol + 1] = board[startRow][startCol];
+                board[startRow][startCol] = nullptr;
+
+                bool passingCheck = isInCheck(p->color);
+
+                board[startRow][startCol] = board[startRow][startCol + 1];
+                board[startRow][startCol + 1] = nullptr;
+
+                if(passingCheck) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            else {
+                bool rookMoved = (p->color == pieceColor::white) ? whiteRookLeftMoved : blackRookLeftMoved;
+
+                if(rookMoved) {
+                    return false;
+                }
+
+                if(board[startRow][startCol - 1] != nullptr) {
+                    return false;
+                }
+
+                if(board[startRow][startCol - 2] != nullptr) {
+                    return false;
+                }
+
+                if(board[startRow][startCol - 3] != nullptr) {
+                    return false;
+                }
+
+                board[startRow][startCol - 1] = board[startRow][startCol];
+                board[startRow][startCol] = nullptr;
+
+                bool passingCheck = isInCheck(p->color);
+
+                board[startRow][startCol] = board[startRow][startCol - 1];
+                board[startRow][startCol - 1] = nullptr;
+
+                if(passingCheck) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         else {
             return false;
         }
     }
 
-    return false;
+    else {
+        return false;
+    }
+}
+
+bool Game::isStalemate(pieceColor color) {
+    if(isInCheck(color)) {
+        return false;
+    }
+
+    for(int startRow = 0; startRow < 8; startRow++) {
+        for(int startCol = 0; startCol < 8; startCol++) {
+
+            if(board[startRow][startCol] == nullptr) {
+                continue;
+            }
+
+            if(board[startRow][startCol]->color != color) {
+                continue;
+            }
+
+            for(int finalRow = 0; finalRow < 8; finalRow++) {
+
+                for(int finalCol = 0; finalCol < 8; finalCol++) {
+
+                    if(!performMoveValidation(startRow, startCol, finalRow, finalCol)) {
+                        continue;
+                    }
+
+                    piece* captured = board[finalRow][finalCol];
+                    board[finalRow][finalCol] = board[startRow][startCol];
+                    board[startRow][startCol] = nullptr;
+
+                    bool stillInCheck = isInCheck(color);
+
+                    board[startRow][startCol] = board[finalRow][finalCol];
+                    board[finalRow][finalCol] = captured;
+
+                    if(!stillInCheck) {
+                        return false;
+                    }  
+                }
+            }
+        }
+    }
+
+    return true;  
 }
 
 bool Game::isLegalMove(int startRow, int startCol, int finalRow, int finalCol) {
@@ -402,7 +594,9 @@ bool Game::isLegalMove(int startRow, int startCol, int finalRow, int finalCol) {
 
 bool Game::isCheckmate(pieceColor color) {
 
-    if(!isInCheck(color)) return false;
+    if(!isInCheck(color)) {
+        return false;
+    }
 
     for(int startRow = 0; startRow < 8; startRow++) {
 

@@ -12,7 +12,7 @@ struct Game {
     bool isSelected;
     bool promotion = false;
     pieceColor color, currentTurn, winner, enPassantColor;
-    bool gameOver = false;
+    bool gameOver = false, isDraw = false, whiteKingMoved, blackKingMoved, whiteRookLeftMoved, whiteRookRightMoved, blackRookLeftMoved, blackRookRightMoved;
     piece* promotionPieces[4] = {nullptr, nullptr, nullptr, nullptr};
     
     Game();
@@ -36,4 +36,6 @@ struct Game {
     bool isCheckmate(pieceColor color);
 
     bool isLegalMove(int startRow, int startCol, int finalRow, int finalCol);
+
+    bool isStalemate(pieceColor color);
 };
