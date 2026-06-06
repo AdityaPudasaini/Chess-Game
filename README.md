@@ -34,6 +34,9 @@ A graphical chess game built in C++ using the SFML library. This project impleme
 - 👑 Check and checkmate detection
 - ♙ Pawn promotion with piece selection UI
 - 🚫 Prevents moves that leave your own king in check
+- 🏰 Castling (kingside and queenside)
+- 👻 En passant
+- 🤝 Stalemate detection
 
 ---
 
@@ -56,7 +59,7 @@ Chess-Game/
 ├── board.hpp
 ├── piece.cpp       # Piece struct, texture loading, drawing
 ├── piece.hpp
-├── assets/         # Piece PNG images and 
+├── assets/         # Piece PNG images and font
 └── .vscode/        # Build configuration
 ```
 
@@ -96,14 +99,17 @@ g++ -std=c++20 main.cpp board.cpp piece.cpp Game.cpp \
 3. **Captures** — Move onto an opponent's piece to capture it.
 4. **Pawn Promotion** — When a pawn reaches the last rank, a promotion menu appears. Click your desired piece.
 5. **Checkmate** — The game ends when a player has no legal moves left.
+6. **Castling** — Move your king two squares toward a rook (if neither has moved and the path is clear).
+7. **En Passant** — After an opponent's pawn moves two squares forward, you can capture it in passing on the next move.
+8. **Stalemate** — The game ends in a draw if the current player has no legal moves but is not in check.
 
 ---
 
 ## 📌 Known Limitations
 
-- No castling or en passant yet
 - No AI — two human players only
 - No game timer
+- No draw by repetition or 50-move rule
 
 ---
 
