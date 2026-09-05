@@ -1,5 +1,4 @@
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics.hpp>
 #include "board.hpp"
 #include "piece.hpp"
